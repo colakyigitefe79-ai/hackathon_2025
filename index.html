@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTextile - Textile Waste Awareness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22c55e',
+                        'primary-foreground': '#ffffff',
+                        secondary: '#f1f5f9',
+                        'secondary-foreground': '#0f172a',
+                        background: '#ffffff',
+                        foreground: '#0f172a',
+                        muted: '#f8fafc',
+                        'muted-foreground': '#64748b',
+                        border: '#e2e8f0',
+                        destructive: '#ef4444',
+                        'destructive-foreground': '#ffffff'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .backdrop-blur {
+            backdrop-filter: blur(8px);
+        }
+        .text-balance {
+            text-wrap: balance;
+        }
+        .text-pretty {
+            text-wrap: pretty;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+        <div class="container mx-auto px-4 flex h-16 items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"/>
+                </svg>
+                <div class="flex flex-col">
+                    <span class="text-lg font-bold text-balance">EcoTextile</span>
+                    <span class="text-xs text-muted-foreground">Waste Awareness</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-6">
+                <button onclick="scrollToSection('news')" class="text-sm font-medium hover:text-primary transition-colors">
+                    Latest News
+                </button>
+                <button onclick="scrollToSection('impact')" class="text-sm font-medium hover:text-primary transition-colors">
+                    Impact Data
+                </button>
+                <button onclick="scrollToSection('solutions')" class="text-sm font-medium hover:text-primary transition-colors">
+                    Solutions
+                </button>
+                <button onclick="scrollToSection('resources')" class="text-sm font-medium hover:text-primary transition-colors">
+                    Resources
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="scrollToSection('newsletter')" class="hidden sm:flex px-4 py-2 text-sm border border-border rounded-md hover:bg-secondary transition-colors">
+                    Subscribe
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2">
+                    <svg id="menu-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg id="close-icon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden border-t bg-background/95 backdrop-blur hidden">
+            <nav class="container mx-auto px-4 py-4 space-y-2">
+                <button onclick="scrollToSection('news')" class="block w-full text-left px-4 py-2 text-sm font-medium hover:text-primary transition-colors">
+                    Latest News
+                </button>
+                <button onclick="scrollToSection('impact')" class="block w-full text-left px-4 py-2 text-sm font-medium hover:text-primary transition-colors">
+                    Impact Data
+                </button>
+                <button onclick="scrollToSection('solutions')" class="block w-full text-left px-4 py-2 text-sm font-medium hover:text-primary transition-colors">
+                    Solutions
+                </button>
+                <button onclick="scrollToSection('resources')" class="block w-full text-left px-4 py-2 text-sm font-medium hover:text-primary transition-colors">
+                    Resources
+                </button>
+                <div class="px-4 pt-2">
+                    <button onclick="scrollToSection('newsletter')" class="w-full px-4 py-2 text-sm border border-border rounded-md hover:bg-secondary transition-colors">
+                        Subscribe
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 lg:py-32 bg-gradient-to-br from-primary/5 to-secondary/20">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 text-balance">
+                    The Hidden Crisis of <span class="text-primary">Textile Waste</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-muted-foreground mb-8 text-pretty">
+                    Every year, 92 million tons of textile waste end up in landfills. 
+                    It's time to change how we think about fashion and sustainability.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="scrollToSection('news')" class="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                        Read Latest News
+                    </button>
+                    <button onclick="scrollToSection('impact')" class="px-8 py-3 border border-border rounded-lg font-semibold hover:bg-secondary transition-colors">
+                        Learn About Impact
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section id="news" class="py-16 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Latest News</h2>
+                <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Stay informed about the latest developments in textile waste reduction and sustainable fashion initiatives worldwide.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <article class="bg-white border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onclick="openModal('news1')">
+                    <img src="/placeholder.svg?height=200&width=400" alt="EU Parliament" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                            <span>Policy Update</span>
+                            <span>•</span>
+                            <span>Dec 15, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">EU Passes Groundbreaking Textile Waste Legislation</h3>
+                        <p class="text-muted-foreground mb-4">New regulations require fashion brands to take responsibility for their entire product lifecycle...</p>
+                        <span class="text-primary font-medium">Read Full Article →</span>
+                    </div>
+                </article>
+
+                <article class="bg-white border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onclick="openModal('news2')">
+                    <img src="/placeholder.svg?height=200&width=400" alt="Recycling Innovation" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                            <span>Innovation</span>
+                            <span>•</span>
+                            <span>Dec 12, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Revolutionary Recycling Technology Breaks Down Any Fabric</h3>
+                        <p class="text-muted-foreground mb-4">Scientists develop chemical process that can separate and recycle mixed textile fibers...</p>
+                        <span class="text-primary font-medium">Read Full Article →</span>
+                    </div>
+                </article>
+
+                <article class="bg-white border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onclick="openModal('news3')">
+                    <img src="/placeholder.svg?height=200&width=400" alt="Corporate Initiative" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                            <span>Corporate</span>
+                            <span>•</span>
+                            <span>Dec 10, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Major Fashion Brands Commit to Zero Waste by 2030</h3>
+                        <p class="text-muted-foreground mb-4">Coalition of 50+ brands announces ambitious sustainability targets and circular economy initiatives...</p>
+                        <span class="text-primary font-medium">Read Full Article →</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="py-16 bg-muted/30">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Environmental Impact</h2>
+                <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Understanding the scale of textile waste and its devastating effects on our planet.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="stat-card bg-white p-6 rounded-lg border border-border text-center cursor-pointer" onclick="openModal('impact1')">
+                    <div class="text-3xl font-bold text-destructive mb-2">92M</div>
+                    <div class="text-sm text-muted-foreground mb-2">tons annually</div>
+                    <div class="font-semibold">Textile Waste</div>
+                    <div class="text-xs text-muted-foreground mt-2">↗ 12% increase</div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg border border-border text-center cursor-pointer" onclick="openModal('impact2')">
+                    <div class="text-3xl font-bold text-destructive mb-2">2.7B</div>
+                    <div class="text-sm text-muted-foreground mb-2">tons CO₂ equivalent</div>
+                    <div class="font-semibold">Carbon Emissions</div>
+                    <div class="text-xs text-muted-foreground mt-2">↗ 8% increase</div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg border border-border text-center cursor-pointer" onclick="openModal('impact3')">
+                    <div class="text-3xl font-bold text-destructive mb-2">79B</div>
+                    <div class="text-sm text-muted-foreground mb-2">cubic meters</div>
+                    <div class="font-semibold">Water Usage</div>
+                    <div class="text-xs text-muted-foreground mt-2">↗ 15% increase</div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-lg border border-border text-center cursor-pointer" onclick="openModal('impact4')">
+                    <div class="text-3xl font-bold text-primary mb-2">12%</div>
+                    <div class="text-sm text-muted-foreground mb-2">of total waste</div>
+                    <div class="font-semibold">Recycling Rate</div>
+                    <div class="text-xs text-primary mt-2">↗ 3% increase</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solutions Section -->
+    <section id="solutions" class="py-16 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Sustainable Solutions</h2>
+                <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    Discover innovative approaches and practical steps toward a circular textile economy.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Circular Design</h3>
+                    <p class="text-muted-foreground mb-4">Design clothes for longevity, repairability, and end-of-life recycling from the very beginning.</p>
+                    <button class="text-primary font-medium hover:underline">Learn More →</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Advanced Recycling</h3>
+                    <p class="text-muted-foreground mb-4">Chemical and mechanical processes that break down textiles into reusable fibers and materials.</p>
+                    <button class="text-primary font-medium hover:underline">Learn More →</button>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg border border-border">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Consumer Education</h3>
+                    <p class="text-muted-foreground mb-4">Empowering consumers with knowledge about sustainable fashion choices and proper disposal methods.</p>
+                    <button class="text-primary font-medium hover:underline">Learn More →</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="resources" class="bg-secondary/20 py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"/>
+                        </svg>
+                        <div class="flex flex-col">
+                            <span class="text-lg font-bold">EcoTextile</span>
+                            <span class="text-xs text-muted-foreground">Waste Awareness</span>
+                        </div>
+                    </div>
+                    <p class="text-muted-foreground text-sm">
+                        Raising awareness about textile waste and promoting sustainable fashion practices for a better future.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Research Reports</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Industry Data</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Educational Materials</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Sustainability Guide</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold mb-4">Take Action</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Donate Clothes</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Find Recycling Centers</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Sustainable Brands</a></li>
+                        <li><a href="#" class="text-muted-foreground hover:text-primary transition-colors">Volunteer</a></li>
+                    </ul>
+                </div>
+
+                <div id="newsletter">
+                    <h3 class="font-semibold mb-4">Stay Updated</h3>
+                    <p class="text-sm text-muted-foreground mb-4">Get the latest news on textile waste and sustainability.</p>
+                    <form onsubmit="handleNewsletter(event)" class="space-y-2">
+                        <input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            required
+                            class="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                        <button type="submit" class="w-full px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-muted-foreground">
+                    © 2024 EcoTextile Waste Awareness. All rights reserved.
+                </p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <button onclick="alert('Follow us on Twitter for daily updates!')" class="text-muted-foreground hover:text-primary transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </button>
+                    <button onclick="alert('Connect with us on LinkedIn for industry insights!')" class="text-muted-foreground hover:text-primary transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="news1" class="modal">
+        <div class="modal-content max-w-4xl">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">EU Passes Groundbreaking Textile Waste Legislation</h2>
+                    <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>Policy Update</span>
+                        <span>December 15, 2024</span>
+                        <span>By Sarah Johnson</span>
+                    </div>
+                </div>
+                <button onclick="closeModal('news1')" class="text-muted-foreground hover:text-foreground">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <img src="/placeholder.svg?height=300&width=600" alt="EU Parliament" class="w-full h-64 object-cover rounded-lg mb-6">
+            <div class="prose max-w-none">
+                <p class="text-lg mb-4">The European Union has unanimously passed comprehensive legislation that will revolutionize how the textile industry handles waste, marking the most significant environmental policy change in the sector's history.</p>
+                <p class="mb-4">The new regulations, which will take effect in January 2026, require all fashion brands operating in EU markets to implement extended producer responsibility (EPR) schemes. This means companies will be financially responsible for the entire lifecycle of their products, from production to disposal.</p>
+                <h3 class="text-xl font-semibold mb-3">Key Provisions</h3>
+                <ul class="list-disc pl-6 mb-4">
+                    <li>Mandatory collection and recycling targets of 65% by 2030</li>
+                    <li>Prohibition of destroying unsold textiles</li>
+                    <li>Digital product passports for traceability</li>
+                    <li>Minimum recycled content requirements</li>
+                </ul>
+                <p class="mb-4">Industry experts predict this legislation will drive innovation in sustainable materials and circular business models, potentially reducing textile waste by up to 40% within the next decade.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="impact1" class="modal">
+        <div class="modal-content max-w-2xl">
+            <div class="flex justify-between items-start mb-6">
+                <h2 class="text-2xl font-bold">Textile Waste Crisis</h2>
+                <button onclick="closeModal('impact1')" class="text-muted-foreground hover:text-foreground">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-destructive/10 p-4 rounded-lg">
+                    <h3 class="font-semibold text-destructive mb-2">92 Million Tons Annually</h3>
+                    <p class="text-sm">The equivalent of a garbage truck full of clothes being dumped in a landfill every second.</p>
+                </div>
+                <div class="space-y-2">
+                    <h4 class="font-semibold">Key Facts:</h4>
+                    <ul class="text-sm space-y-1 text-muted-foreground">
+                        <li>• Only 12% of textile waste is currently recycled</li>
+                        <li>• Fast fashion has increased clothing production by 400% since 2000</li>
+                        <li>• Average garment is worn only 7-10 times before disposal</li>
+                        <li>• Synthetic textiles can take 200+ years to decompose</li>
+                    </ul>
+                </div>
+                <div class="bg-primary/10 p-4 rounded-lg">
+                    <h4 class="font-semibold text-primary mb-2">Potential Solutions</h4>
+                    <p class="text-sm">Implementing circular design principles could reduce textile waste by 80% while creating new economic opportunities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    toggleMobileMenu();
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            
+            mobileMenu.classList.toggle('hidden');
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function handleNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            alert(`Thank you for subscribing with ${email}! You'll receive our latest updates on textile waste and sustainability.`);
+            event.target.reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Add more modals for other news articles and impact data
+        const additionalModals = [
+            { id: 'news2', title: 'Revolutionary Recycling Technology Breaks Down Any Fabric' },
+            { id: 'news3', title: 'Major Fashion Brands Commit to Zero Waste by 2030' },
+            { id: 'impact2', title: 'Carbon Emissions from Textile Industry' },
+            { id: 'impact3', title: 'Water Usage in Textile Production' },
+            { id: 'impact4', title: 'Current Recycling Rates and Progress' }
+        ];
+
+        // Create additional modals dynamically
+        additionalModals.forEach(modal => {
+            const modalHTML = `
+                <div id="${modal.id}" class="modal">
+                    <div class="modal-content max-w-2xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <h2 class="text-2xl font-bold">${modal.title}</h2>
+                            <button onclick="closeModal('${modal.id}')" class="text-muted-foreground hover:text-foreground">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-muted-foreground">Detailed information about ${modal.title.toLowerCase()} would be displayed here with comprehensive data, analysis, and actionable insights.</p>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        });
+    </script>
+</body>
+</html>
